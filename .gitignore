@@ -54,3 +54,9 @@ build/
 
 # stuff just for me
 my-tools/
+
+# Eclipse/EPIC stuff
+.project
+.ignorepath
+.includepath
+.settings

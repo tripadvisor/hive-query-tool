@@ -9,3 +9,7 @@ data/hql_templates.db
 data/hive_jobs.db
 .git
 my-tools
+.project
+.ignorepath
+.includepath
+.settings

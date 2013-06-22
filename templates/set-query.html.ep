@@ -1,0 +1,17 @@
+% use JSON qw(to_json);
+<!DOCTYPE html>
+<html>
+  <head><title>Select or Enter a Hive Query</title></head>
+  <body>
+    <%= link_to "Previously submitted Hive Tasks" => '/jobs' %><br/>
+    <hr/>
+    Name: <%= $template_name %><br/>
+    Description: <%= $template_description %><br/>
+    %= form_for '/prep-query' => (method => 'GET') => begin
+      %= text_area 'hql_tmpl' => $template_code, cols => 80, rows => 40
+      <br/>
+      %= submit_button 'Fill Parameters'
+    % end
+  </body>
+</html>
+

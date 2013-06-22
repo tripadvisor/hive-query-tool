@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head><title>Your Query</title></head>
+  <body>
+    <h3>You query looks like this:</h3>
+    <pre>
+<%= $hql %>
+    </pre>
+    %= form_for '/run-query' => (method => 'POST') => begin
+    <br/>
+    Notify Email:
+    %= text_field 'notify_email' => ''
+    <br/>
+    %= hidden_field 'hql' => $hql
+    %= submit_button 'Run it!'
+    %= end
+  </body>
+</html>
+

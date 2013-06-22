@@ -1,0 +1,53 @@
+
+# Include the default entries shipped with ExtUtils:
+
+#!include_default
+
+# Each line is a regular expression. If the path to a file (relative to the
+# top-level dir of the dist) matches, it will not be included in the tarcall
+# when "make dist" (or equivalent) is run. Also, IIRC, matching files/dirs
+# will not be cleaned up during a "make clean" (or equivalent)
+
+### HQT-specific files & dirs to skip when packaging
+
+# skip dirs containing libs installed from CPAN by setup-hqt
+\b\.extlib/
+\bextlib/
+
+# skip any files with "example" in the name under various directories...
+# Though normally there are "easier ways" to do this, over an hour of testing
+# and experimentation showed me that those other ways don't work. (especially
+# interesting/frustrating... setting the 'x' modifier doesn't work - *at all*)
+\bconf/(?i:.*example.*$(*COMMIT)(*FAIL)|.+)
+\bquery_templates/(?i:.*example.*$(*COMMIT)(*FAIL)|.+)
+
+# keep the "data" dir, but skip anything inside it
+\bdata/.+
+
+### Other stuff to skip
+
+# No need for a MANIFEST.SKIP in a released dist!
+\bMANIFEST\.SKIP.*
+
+# Eclipse & EPIC files
+\b\.project
+\b\.ignorepath
+\b\.includepath
+\b\.settings/
+
+# this is my own thing for setting svn ignores
+\b\.svnignore
+
+# don't package Dist::Zilla & Pod::Weaver stuff in a dist
+\bdist.ini
+\bweaver.ini
+
+# packages & archive files in the root dir
+\b[^/]+\.(?i:tar|tgz|tbz2?|gz|bz2?|zip)$
+
+
+### My personal prefs:
+\bmy-tools/
+\bdev-tools/
+\bauthor-tools/
+\brelease-tools/

@@ -1,0 +1,32 @@
+#MAIN .query_text { display:none;  border:1px solid #589442; padding:10px;}
+
+#MAIN h3 { margin-bottom:5px; }
+#MAIN .query_vars { margin: 10px 5px; }
+#MAIN .query_vars  label { display:inline-block; }
+#MAIN hr { color:#589442;}
+
+#MAIN .btns { padding:10px 0px; }
+#MAIN .btns input { font-size:1.1em; font-weight:bold; }
+
+#MAIN .prepared_query { display:none; border:1px solid #589442; padding:10px; }
+.red {color:red; font-weight:bold; font-size: 1.05em;}
+
+.pretext { white-space:pre-wrap;}
+
+#MAIN email_box { margin:5px 0px 10px; }
+
+.hidden { display: none;}
+
+#WHERE_CLAUSE_HIDDEN { display:none; }
+#WHERE_CLAUSES { padding: 10px 0px; }
+#WHERE_CLAUSES .where_clause {margin: 10px 0px;}
+#WHERE_CLAUSES .where_clause .col_name { margin: 0px 5px; }
+#WHERE_CLAUSES .where_clause .col_value { margin: 0px 5px; }
+#WHERE_CLAUSES .inner_where_clause { border: 1px dashed #333333; padding: 10px 10px;}
+
+#GROUP_CLAUSE_HIDDEN { display:none; }
+#GROUP_BY_CLAUSES { padding:10px 0px;}
+#GROUP_BY_CLAUSES .group_by_clause { padding:5px 0px; }
+
+.tmpl_desc { width:100%; font-family:"Arial", "Bitstream Vera Sans", "Verdana"; }
+.error_msg { display:none;color:red; }

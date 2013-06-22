@@ -1,0 +1,6 @@
+div.status_info { padding-bottom: 10px; }
+div.query_text { white-space: pre-wrap; }
+div.progress_info { clear:both; overflow:hidden; }
+.progress_info .label { float:left; overflow:hidden; font-weight:bold; }
+.progress_info  .info {overflow:hidden; padding-left:10px;}
+.progress_info .info span { display: block; padding-bottom: 5px; }

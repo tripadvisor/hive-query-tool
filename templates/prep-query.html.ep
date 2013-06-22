@@ -1,0 +1,162 @@
+% use JSON qw(encode_json);
+% use Data::Dumper qw(Dumper);
+% content_for css_header => begin
+  %= stylesheet '/css/prep_query.css'
+%end
+% content_for 'js_header' => begin
+  %= javascript 'js/hqt/prep_query.js'
+  %= javascript '/js/json2.js'
+%end
+%# when there are "where" clauses to give, each choice will look like this:
+% if ( @$where_columns ) {
+  <div id="WHERE_CLAUSE_HIDDEN" class="where_clause" >
+    Filter:
+    <select name="col" class="col_name">
+      %for my $col_name ( @$where_columns) {
+        <option value="<%= $col_name %>"><%= $col_name %></option>
+      % }
+    </select>
+    <select name="op" class="col_relational_op">
+      <option value="=">EQUALS</option>
+      <option value="!=">NOT EQUALS</option>
+      <option value="&gt;">GREATER THAN</option>
+      <option value="&lt;">LESS THAN</option>
+      <option value="&gt;=">GREATER THAN EQUALS</option>
+      <option value="&lt;=">LESS THAN EQUALS</option>
+      <option value="LIKE">LIKE</option>
+      <option value='IN'>IN</option>
+      <option value='REGEXP'>REGEXP</option>
+    </select>
+    <input name="val" class="col_value"/>
+    <input type="button" value="Remove"
+      onclick="hqt.prep_query.removeWhereClause($(this).parent())" />
+  </div>
+  <div id="WHERE_LOGICAL_OP" class="where_logic_op hidden">
+    <select class="logical_op">
+      <option value="AND">AND</option>
+      <option value="OR">OR</option>
+    </select>
+  </div>
+  <div id="WHERE_CLAUSE_CONTAINER" class="where_clause inner_where_clause hidden">
+    Filter group:<br/>
+    <br />
+    <input type="button"
+        onclick="hqt.prep_query.addWhereClause($(this).parent());"
+         value="Add Filter to Group"/>
+    <input type="button"
+        onclick="hqt.prep_query.addInnerWhereClause($(this).parent());"
+         value="Add Nested Filter Group"/>
+    <input type="button" value="Remove"
+      onclick="hqt.prep_query.removeWhereClause($(this).parent())" />
+  </div>
+% }
+
+%# if there are "group by" clauses to give, each choice will look like this:
+% if ( @$group_columns ) {
+  <div id="GROUP_CLAUSE_HIDDEN" class="group_by_clause">
+      Column:
+      <select name="col" class="group_by_col">
+        % for my $colname (@$group_columns) {
+          <option value="<%= $colname %>"><%= $colname %></option>
+        % }
+      </select>
+      <input type="button" value="Remove"
+        onclick="$(this).parent().remove();" />
+  </div>
+% }
+
+%# ---------------------
+%# Name and description
+%# ---------------------
+<h1><%= $template_name %></h1>
+<p><%== $template_description %></p>
+
+% if( @$errors) {
+<div class="pretext red">
+  This query template has the below errors
+  % for my $err ( @$errors ) {
+    <%= $err . "\n" %>
+  % }
+</div>
+%}
+
+<input type="button" value='Show Query' id='QUERY_BTN' onclick='hqt.prep_query.toggleQueryText(); return false;' />
+<p class="query_text pretext">
+  <%= $hql_tmpl %>
+</p>
+
+% my $error_size = @$errors;
+% if($error_size <= 0 ) {
+
+
+% if (keys %$vars) {
+  <hr/>
+  <h3>Enter required values:</h3>
+  % for my $var_name  ( keys %$vars ) {
+    % my $var_type = $vars->{$var_name}{type} || "";
+    <div class="query_vars">
+      % my $query_var_name = "var." . $var_name;
+      <label for="<%= $var_name%>" ><%= $var_name . ":" %></label>
+      % if ( $var_type eq "select" ) {
+        <select name="<%= $var_name %>" id="<%= $var_name %>" class="query_variables <%= $var_type %>">
+          % foreach my $selopt (@{$vars->{$var_name}{options}}) {
+            % my $is_default = $selopt->{value} eq $vars->{$var_name}{default};
+            <option value="<%= $selopt->{value} %>" <% if ($is_default) { %>selected="selected"' <% } %>><%= $selopt->{label} %></option>
+          % }
+        </select>
+      % } else {
+        %= text_field $var_name => $vars->{$var_name}{default} , class => "query_variables $var_type"
+      % }
+      <span class="error_msg">* Please enter value here</span>
+    </div>
+  % }
+  <hr />
+% }
+
+% if ( @$where_columns ) {
+  <h3>Add filters to make your query more specific: (optional)</h3>
+  <div id="WHERE_CLAUSES">
+    <input type="button"
+        onclick="hqt.prep_query.addWhereClause($(this).parent());"
+        value="Add Filter"/>
+    <input type="button"
+        onclick="hqt.prep_query.addInnerWhereClause($(this).parent());"
+        value="Add Filter Group"/>
+  </div>
+  <hr />
+% }
+
+% if ( @$group_columns ) {
+  <h3>Add columns to group (breakout) your results: (optional)</h3>
+  <div id="GROUP_BY_CLAUSES">
+    <input type="button"
+      onclick="hqt.prep_query.addGrooupByClause($(this).parent());"
+      value="Add column"/>
+  </div>
+  <hr />
+% }
+<form>
+   % if (defined $limit) {
+    <h3>Please enter the number of rows you want from the query</h3>
+    <div>
+    Limit Clause: <%= text_field 'limit' => $limit->{default}%>
+    </div>
+    <hr />
+  % }
+
+  <h3>Please enter your email address below so we can notify about your query </h3>
+  %= text_field 'notify_email' => '' , class => "email_box"
+  <span class="error_msg">* Please enter value here</span>
+  <hr />
+  <div class="btns">
+    <input type="button" value="Preview Query" onclick="hqt.prep_query.previewQuery();" />
+    <input type="button" value="Run Query" onclick = 'return hqt.prep_query.runQuery();'/>
+    %= hidden_field 'user_inputs' => '', class=>'input_vars'
+    %= hidden_field 'template_id' => $template_id
+    %= hidden_field 'template_name' => $template_name
+   </div>
+  <div class="prepared_query pretext">
+  </div>
+</form>
+%}
+

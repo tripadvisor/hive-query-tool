@@ -1,0 +1,23 @@
+% layout 'default';
+% content_for css_header => begin
+  %= stylesheet '/css/login.css'
+%end
+<div id="LOGIN_PAGE">
+<div class="login_block">
+    <div class="header">
+       Sign in using ldap account 
+    </div>
+    % if ($msg) {
+      <div id="login_err" class="login_err"><%= $msg %></div>
+    % }
+    %= form_for 'login' => (method => 'POST') => begin
+      <label for="user" class="inputs">UserName:</label>
+      %= text_field user => $user, class => 'inputs'
+      <label for="pass" class="inputs">Password:</label>
+      %= password_field 'pass', class=> 'inputs'   
+      %= hidden_field dest => $dest
+      <div class="buttons">
+        %= submit_button 'Login'
+      </div>
+    % end
+</div>

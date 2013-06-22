@@ -1,0 +1,5 @@
+id: test
+name: sanity check
+description: simple query for testing
+...
+select * from dual {{ insert_limit(default => 1) }}

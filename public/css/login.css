@@ -1,0 +1,14 @@
+body { margin:0px; padding:0px; font-family: "Arial", "Bitstream Vera Sans", "Verdana"; font-size: 13px; color: #333; background-color:#F1F1F1;}
+
+#LOGIN_PAGE { width:100%; padding-top: 100px;}
+
+.login_block { width:300px; border:1px solid #589442; margin: 0 auto; background-color:#FFFFFF;}
+
+.login_block .header { border-bottom: 1px solid #F1F1F1; padding: 10px; text-align:center; font-size:1.5em; font-weight:bold;}
+
+.login_block .inputs { display:block; padding:10px 20px 5px; }
+.login_block input.inputs { padding:0px;  margin:0px 20px 5px;}
+.login_block div.buttons {  padding:10px 20px 10px; }
+.login_block div.buttons input { padding: 10px; margin-right: 25px; font-size:1.2em;}
+
+.login_err {color: red; padding:10px 20px;}

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    %= content_for 'css_header' 
+    %=javascript '/js/jquery.min.js'
+    %= content_for 'js_header'
+  </head>
+
+  <body><%= content %></body>
+</html>

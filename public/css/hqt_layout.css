@@ -1,0 +1,17 @@
+body { margin:0px; padding:0px; font-family: "Arial", "Bitstream Vera Sans", "Verdana"; font-size: 13px; color: #333; background-color:#F1F1F1;}
+#PAGE {width:100%; padding:0px; }
+
+body a { color: #0F588E; }
+#CONTENT_WRAP { width:983px; padding:0px; margin:0 auto; background-color:white; }
+#HEADER {border-bottom:2px solid #589442; }
+
+#HEADER .heading {padding:25px 15px 0px;}
+#HEADER .heading img { float:left;  overflow:hidden; }
+#HEADER .heading .app_name { font-weight: bold; font-size: 2.5em; padding-left: 75px; }
+#HEADER .nav_links { position: relative; height: 35px; margin-right:20px; }
+#HEADER .nav_links ul { display: block; position: absolute; right: 0px; }
+#HEADER .nav_links li { display: inline; list-style-type: none; padding-right: 10px; }
+#HEADER .nav_links a { font-size:1.2em;}
+
+#PAGE #MAIN { padding:10px; }
+.red { color:red;}

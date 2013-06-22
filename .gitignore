@@ -1,0 +1,56 @@
+
+# dist tarballs and dirs
+### TODO: add this
+
+# HQT-specific stuff
+data/*
+query_templates/*
+!query_templates/*example*
+conf/*
+!conf/*example*
+derby.log
+extlib
+.extlib
+log/*
+
+
+# Version control files and dirs.
+RCS
+CVS
+*,v$
+.svn/
+.git/
+
+# EUMM/MB generated files and dirs.
+MANIFEST.bak
+_build/
+Build
+Makefile
+blib/
+
+# Temp, old and vim/emacs backup files.
+*~
+*.old
+\#*#
+.#*
+.*.swp
+
+# eclipse files
+.project
+
+# archive files
+*.gz
+*.bz2
+
+# other random stuff
+*.BACKUP
+*.orig
+*.new
+*.DS_Store
+*.tdy
+*.bak
+build/
+.build/
+
+# stuff just for me
+my-tools/

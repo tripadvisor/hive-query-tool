@@ -1,0 +1,238 @@
+#!/bin/bash
+#
+# Summary:
+#   This script will set up your environment et al so you can run the Hive
+#   Query Tool. This script is intended to be sourced, but can be run without
+#   sourcing. The /path/to/perl argument(s) are optional.
+#
+# Usage:
+#   source setup-hqt [/path/to/perl /path/to/other/perl ...]
+#   setup-hqt [/path/to/perl /path/to/other/perl ...]
+#
+# More Info:
+#   Use this script to find, fetch, build and install all the CPAN dependencies
+#   for running the Hive Query Tool (HQT). This includes looking for the most
+#   recent version of perl installed on your system and using it.
+#
+#   I have it do this because the HQT requires perl version 5.10.1 or greater
+#   (which is actually already fairly old) and I have found that a lot of
+#   systems around here don't have it.
+#
+#   So, this script will set everything up nice and orderly, if possible.
+#
+#   If you source this script in a bash shell, it will also set up your
+#   environment so perl can find the installed dependencies.
+#
+#   If you wish/need, you can pass as arguments the path(s) to specific
+#   perl binaries you want to try to use, and those will be checked instead
+#   of the defaults.
+#
+#   If you don't have perl 5.10.1 or newer on your system, you'll need to find
+#   a way to install one. If you have an RPM-based system, you should be able
+#   to build an RPM for a more modern version by using another script in the
+#   warehouse source tree:
+#
+#     $WHTOP/miscprojects/modern-perl/setup.sh
+#
+#   It will create an RPM that installs perl 5.16.1 under /opt/perl-5.16.1
+#
+#   Let's say you have that installed now...
+#   You can then just source this script.
+#
+# @author: Stephen R. Scaffidi <sscaffidi@tripadvisor.com>
+# @since: Oct. 2012
+#
+
+
+# get the version of the given perl binary
+get-perlver () {
+  "$1" -e 'print "$^V"' | sed 's/^v//'
+}
+
+# normalize the perl version so we can do a numeric comparison
+normalize-ver () {
+  local ver=$(echo "$1" | sed 's/[^0-9.]//g')
+  echo "$ver" \
+    | awk 'BEGIN{FS="."}{printf "%d", $1; for (i=2; i<=NF; i++) printf "%.3d", $i}'
+}
+
+# find the most recent perl on this system that is newer than the specified version
+find-best-perl () {
+  local need_nver=$( normalize-ver "$1" ); shift
+
+  local best_nver=0  # track the highest numeric version found
+  local best_ver=""  # ditto for the version-y version
+  local best_perl="" # track the path to the perl with the highest version
+
+  for found_perl in "$@"; do
+    [[ ! -e "$found_perl" ]] && continue
+    got_ver=$( get-perlver "$found_perl" )
+    got_nver=$( normalize-ver "$got_ver" )
+    [[ "$got_nver" < "$need_nver" ]] && continue
+    if [[ "$got_nver" > "$best_nver" ]]; then
+      best_perl="$found_perl"
+      best_ver="$got_ver"
+      best_nver="$got_nver"
+    fi
+  done
+  cat <<END
+$best_perl
+$best_ver
+END
+}
+
+
+
+###########################################################
+# prep for script cleanup
+
+# if anything goes wrong, this will restore the shell options
+# changed in this script
+cleanup-on-exit () {
+  #echo "$?"
+  set +e
+  [[ "$nounset_status"  == "off" ]] && set +o nounset
+  [[ "$pipefail_status" == "off" ]] && set +o pipefail
+  [[ "$errexit_status"  == "on"  ]] && set -o errexit  # this one must be last!
+  trap -- ERR
+}
+
+
+# get the state of the given shopt/set -o option (on or off)
+shopt-status () {
+  local _opt="$1"
+  if shopt -q -o $_opt; then
+    echo "on"
+  else
+    echo off
+  fi
+}
+
+
+# if this script is being sourced, we'll want to record the current state
+# of these shell options so we can change them back on exit
+errexit_status=$(shopt-status "errexit")
+pipefail_status=$(shopt-status "pipefail")
+nounset_status=$(shopt-status "nounset")
+trap "cleanup-on-exit" ERR
+
+###########################################################
+# Main script
+
+
+# determine if this script has been sourced or not
+if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
+  SELF_SOURCED=""
+else
+  SELF_SOURCED=1
+fi
+
+# make sure we fail fast if anything goes wrong.
+set -e
+set -o nounset
+set -o pipefail
+
+
+# here are some common places to look for perl binaries
+POSSIBLE_PERLS=( `which -a perl` /{opt,usr/local}/perl*/bin/perl )
+
+# if the user specified which perl(s) they want to try, then just use those
+[[ $# -gt 0 ]] && POSSIBLE_PERLS=( "$@" )
+
+# now, find the best available perl
+FOUND_PERL=( $(find-best-perl "5.10.1" "${POSSIBLE_PERLS[@]}") "" "")
+BEST_PERL="${FOUND_PERL[0]}"
+BEST_VER="${FOUND_PERL[1]}"
+
+# if a suitable perl could not be found...
+if [[ "$BEST_PERL" == "" ]]; then
+  echo 1>&2 "Could not locate a new enough version of perl."
+  echo 1>&2 "Please upgrade, or contact sscaffidi@tripadvisor.com for help."
+  # terminate differently depending on how we were called.
+  set +e; [[ -n "$SELF_SOURCED" ]] && return 1; exit 1
+fi
+
+echo "Found perl $BEST_VER at $BEST_PERL"
+
+# these vars aren't required by perl or the app, but they may come in handy
+PERL_VER="$BEST_VER"
+PERL_NAME="perl-$BEST_VER"
+PERL_BINDIR="$( dirname "$BEST_PERL")"
+
+# should be the dir where this script lives. the code below will get
+# the correct path even if the script is sourced.
+APP_ROOT="$(cd "`dirname "${BASH_SOURCE[0]}"`" && pwd)"
+
+# the external dependencies for this code will be installed here
+APP_EXTLIB="$APP_ROOT/extlib"
+
+# make sure your path finds the new perl first
+# TODO: make this smarter so we don't keep adding to the path like crazy.
+#  perhaps use the value in PERL_LOCAL_LIB_ROOT to clean out old LL paths.
+export PATH="$PERL_BINDIR:$PATH"
+
+# in case local::lib is already in use, clear up those env vars.
+# set them all to "" to avoid errors because of the nounset option.
+CLEAR_VARS=( PERL_LOCAL_LIB_DIR PERL_LOCAL_LIB_ROOT PERL_MB_OPT PERL_MM_OPT
+             PERL5LIB PERLLIB PERL5OPT )
+for var in "${CLEAR_VARS[@]}"; do declare $var=""; done
+
+# create a lib dir specific to the version of perl we're using
+echo "Setting up extlib dir in [$APP_ROOT/.extlib/$PERL_NAME]"
+mkdir -p "$APP_ROOT/.extlib/$PERL_NAME"
+
+# set the extlib symlink to point to that lib dir
+echo "Setting symlink [$APP_EXTLIB] to [$APP_ROOT/.extlib/$PERL_NAME]"
+rm -f "$APP_EXTLIB"
+ln -sf ".extlib/$PERL_NAME" "$APP_EXTLIB"
+
+# if creating a new extlib, record some info about the build.
+# if a different user or different perl is running this, record that, too.
+# don't bother adding anything if the user or perl or host are all the same.
+echo "Updating extlib build info"
+BUILD_INFO="$USER@$(hostname)	$BEST_PERL	$PERL_VER"
+BUILD_INFO_FILE="$APP_EXTLIB/extlib-built-by.txt"
+[[ -e "$BUILD_INFO_FILE" ]] && grep -q -F "$BUILD_INFO" "$BUILD_INFO_FILE"
+[[ $? -ne 0 ]] && echo "[$(date)]	$BUILD_INFO" >> "$BUILD_INFO_FILE"
+
+
+# we can use curl or wget, whatever's available
+if which curl > /dev/null 2>&1; then
+  curlwget="curl --insecure --silent --show-error --location"
+elif which wget > /dev/null 2>&1; then
+  curlwget="wget --no-check-certificate --quiet -O -"
+else
+  echo 1>&2 "Could not find curl or wget for fetching dependencies."
+  set +e; [[ -n "$SELF_SOURCED" ]] && return 1; exit 1
+fi
+
+# if it's not already there, install cpanm (and local::lib) into our
+# lib dir so we can use them to install the rest of the app's deps easily
+echo "Checking dependency installation toolchain"
+[[ -x "$APP_EXTLIB/bin/cpanm" ]] ||
+  $curlwget http://cpanmin.us \
+  | perl - --quiet --local-lib="$APP_EXTLIB" App::cpanminus local::lib
+
+# now setup the environment so perl knows to look there for libs
+# and so cpan/cpanm knows to install deps there.
+echo "Setting perl env for libs under [$APP_EXTLIB]"
+eval $(perl -I"$APP_EXTLIB/lib/perl5" -Mlocal::lib="$APP_EXTLIB")
+
+# now instruct cpanm to install all the dependencies
+# declared in the Makefile.PL
+echo "Making sure all dependencies are installed"
+cpanm --quiet --installdeps . \
+&& echo "Done!"
+
+[[ -n "$SELF_SOURCED" ]] || cat <<END
+Note that you must *source* this script so your shell picks up the vars that
+will tell perl how to find the stuff in extlib!
+END
+
+# this is important to end the script!
+cleanup-on-exit
+
+# doing this after everything else since it doesn't
+# matter all that much if it fails
+( cd "$APP_ROOT" && make distclean 2> /dev/null > /dev/null )
+

@@ -1,0 +1,17 @@
+% content_for css_header => begin
+  %= stylesheet '/css/select_template.css'
+%end
+<h1>All Queries</h1>
+<ul class="query_list">
+%for my $template_id (keys %$template_info) {
+  % my $template_name = $template_info->{$template_id}->{name};
+  % my $url_link = '/prep-query?template_id=' . $template_id;
+  <li><%= link_to "$template_name" => "$url_link" %></li>
+% }
+</ul>
+% if ( ! keys %$template_info ) {
+  <div class="pretext red">
+    No HQL templates could be found.
+    The HQL template DB may be missing or empty.
+  </div>
+% }

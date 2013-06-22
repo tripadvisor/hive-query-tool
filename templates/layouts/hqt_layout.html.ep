@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <title><%= title %></title>
+    %= stylesheet '/css/hqt_layout.css'
+    %= stylesheet 'http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css'
+    %= content_for 'css_header' 
+    %= javascript '/js/jquery.min.js'
+    %= javascript 'http://code.jquery.com/jquery-1.8.2.js'
+    %= javascript 'http://code.jquery.com/ui/1.9.1/jquery-ui.js'
+    %= content_for 'js_header'
+  </head>
+
+  <body>
+    <div id="PAGE" >
+      <div id="CONTENT_WRAP" >
+        <div id="HEADER" >
+          <div class="heading" >
+            <img src="/img/ta_logo.png"/>
+            <span class="app_name"><%= config 'app_name' %></span>
+         </div>
+         <div  class="nav_links">
+           <ul >
+             % my $current_url = url_for;
+             % if ( $current_url ne '/select-template') {
+               <li><a href="/select-template">Home</a></li>
+             %}
+             <li><a href="/jobs">Your Queries</a></li>
+             <li><a href="/logout">Logout</a></li>
+          </ul>
+        </div>
+        </div>
+        <div id="MAIN">
+          <%= content %>
+        </div> <!-- end of MAIN div -->  
+      </div> <!-- end of CONTENT_WRAP div -->
+    </div><!-- end of PAGE div -->
+  </body>
+</html>

@@ -1,0 +1,66 @@
+% content_for css_header => begin
+  %= stylesheet '/css/jobinfo.css'
+%end
+% use App::HiveQueryTool::Utils;
+<h3>Query status</h3>
+<div class="status_info">
+  <b>Status: </b> <%= $info->{state} %>
+</div>
+% if ( defined $info->{exit_code} ) {
+  <div class="status_info">
+    Query completed with
+    % if( $info->{exit_code}) {
+      <span class='red'><%= $info->{error_msg} || "exit code $info->{exit_code}" %></span>
+    % }
+    % else {
+       : Success
+    % }
+</div>
+% }
+<div class="status_info">
+  <b>Start Time: </b> <%= App::HiveQueryTool::Utils::getDate_mdy_hms_timezone($info->{start_time}) %>
+</div>
+% if ($info->{end_time}) {
+  <div class="status_info">
+    <b>End Time: </b> <%= App::HiveQueryTool::Utils::getDate_mdy_hms_timezone($info->{end_time}) %>
+  </div>
+%}
+<div class="status_info">
+  The query has been running for <%= $info->{run_time} %> seconds.
+</div>
+% if ( $show_results ) {
+  <div class="status_info">
+    Results In HDFS File: <%= link_to "/job/$qid/results" => "/job/$qid/results" %>
+  </div>
+% }
+% if( (defined $info->{progress_info}) && (keys %{ $info->{progress_info} }) ) {
+  <div class="progress_info">
+    <div class="label">Progress Info:</div>
+    <div class="info">
+      <span>Total Number of stages: <%= $info->{job_count} %></span>
+      % for my $progress_stage (keys %{ $info->{progress_info} }) {
+       <div class="stage">
+          <span><b>Stage:</b> <%= $info->{progress_info}->{$progress_stage}->{stage} %></span>
+          <span>Map % complete: <%= $info->{progress_info}->{$progress_stage}->{map} %> % </span>
+          <span>Reduce % complete: <%= $info->{progress_info}->{$progress_stage}->{reduce} %>%</span>
+        </div>
+      % }
+    </div>
+  </div>
+% }
+<hr />
+%# if the job has exited, give the option to clean up the info
+% if ( defined $info->{exit_code} ) {
+  <%= link_to "Delete Job Data" => "/job/$qid/delete" %>
+% }
+%# if it is still running, give the option to kill the job
+% else {
+  <%= link_to "Kill Job" => "/job/$qid/kill" %>
+% }
+<hr />
+<h3>Query:</h3>
+<div class="query_text">
+  %= $info->{hql}
+</div>
+
+

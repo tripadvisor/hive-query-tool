@@ -1,0 +1,39 @@
+% content_for css_header => begin
+  %= stylesheet '/css/jobs.css'
+%end
+% if (defined $jobs_info) {
+  % if ($jobs_info->{running}) {
+    <h3>Currently running jobs</h3>
+    % my $running_jobs = $jobs_info->{running};
+    <div class="jobs">
+    % for my $running_job_id (keys %$running_jobs) {
+       % my $running_job_info = $running_jobs->{$running_job_id};
+       % my $job_text =  $running_job_info->{template_name} . " started at " . ($running_job_info->{submit_time});
+       <div class="job_link">
+         %= link_to $job_text => "/job/$running_job_id"
+       </div>
+    %}
+    </div>
+  % }
+  % else {
+    <h3>You don't have any running jobs for now.</h3>
+  % }
+  
+  % if ($jobs_info->{finished}) {
+   <h3>Completed jobs:</h3>
+    % my $finished_jobs = $jobs_info->{finished};
+    <div class="jobs">
+    % for my $finished_job_id (keys %$finished_jobs) {
+       % my $finished_job_info = $finished_jobs->{$finished_job_id};
+       % my $job_text =  $finished_job_info->{template_name} . " started at " . ($finished_job_info->{submit_time});
+       <div class="job_link">
+         %= link_to $job_text => "/job/$finished_job_id"
+       </div>
+    %}
+    </div>
+  % }
+  % else {
+    <h3>You don't have any jobs completed jobs</h3>
+  % }
+%}  
+

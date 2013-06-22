@@ -1,0 +1,11 @@
+Makefile
+derby.log
+user-auth.pl
+extlib
+MYMETA.yml
+MYMETA.json
+.extlib
+data/hql_templates.db
+data/hive_jobs.db
+.git
+my-tools

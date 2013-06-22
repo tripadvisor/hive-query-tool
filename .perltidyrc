@@ -1,0 +1,36 @@
+# Perl Best Practices (plus errata) .perltidyrc file
+#-pt=1    # Medium parenthesis tightness
+#-bt=1    # Medium brace tightness
+#-sbt=1   # Medium square bracket tightness
+#-bbt=1   # Medium block brace tightness
+
+--standard-error-output               # errors to stderr, not a file
+--warning-output                      # Show warnings
+--maximum-consecutive-blank-lines=3   # Default is 1
+--nohanging-side-comments             # Troublesome for commented out code
+
+
+--break-after-all-operators
+
+--backup-and-modify-in-place
+--maximum-line-length=100
+--indent-columns=4
+--iterations=2
+--continuation-indentation=2
+--no-outdent-long-lines
+--no-outdent-labels
+--paren-tightness=1
+--no-space-for-semicolon
+--indent-spaced-block-comments
+--minimum-space-to-comment=2
+--static-block-comments
+--static-side-comments
+
+--opening-paren-right
+--opening-hash-brace-right
+--opening-square-bracket-right
+
+# these two are the default, but I might want to tweak them.
+#--vertical-tightness=0
+#--vertical-tightness-closing=0
+

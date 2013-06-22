@@ -1,0 +1,39 @@
+
+
+#
+# Please copy this example config file to a file named
+# "hqt_config.yaml" in the same directory, then edit that
+# with your desired settings.
+#
+
+
+# this is used to encrypt session/cookie info
+secret: "it's a secret to everyone"
+
+# where the front-end's web-server will listen
+frontend_listen: "http://127.0.0.1:3030"
+
+# where the back-end's web-server will listen
+backend_listen: "http://127.0.0.1:9090"
+
+email_from_name: "Hive Query Tool"
+email_from_addr: "hivequerytool@mydomain.com"
+
+# relative to the application root, where to find the templates dbm file
+template_dbm: "data/templates.db"
+
+# directory from which to load templates
+hql_template_dir: "hql_templates/"
+
+# what method of authentication to use. Set to "none" or
+# comment-out to disable user-authentication.
+frontend_auth: "ldap"
+
+# Config for using LDAP for authentication.
+ldap_config:
+  server_url: 'ldap://ldap.mydomain.com/'
+  user_base:  'ou=people,dc=mydomain,dc=com'
+  #cacert_dir: '/etc/openldap/certs/'
+  verify_cert: 'none'
+  enable_tls: 1
+

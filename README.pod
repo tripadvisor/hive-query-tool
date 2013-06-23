@@ -186,7 +186,9 @@ We're working on it, though. (patches welcome!)
 Thanks to everybody who's helped develop the HQT, whether it be through
 code, documentation, bug reports or feature requests!
 
-I<< - B<Stephen R. Scaffidi>, initial author and current primary maintainer >>
+I<< ~ B<Stephen R. Scaffidi>, initial author and current primary maintainer >>
+
+Special thanks to:
 
 =over 4
 

@@ -1,0 +1,215 @@
+=pod
+
+=encoding utf8
+
+=head1 The Hive Query Tool
+
+The Hive Query Tool (HQT, for short) is a web-interface for running reports
+using L<Apache Hive|http://hive.apache.org>. It is intended, first and
+foremost, to be as easy-to-use as possible for non-technical people, while
+allowing them to customize the reports they run with a high degree of
+flexibility - well beyond simple variable substitution.
+
+=head2 Installation
+
+Installation is actually quite easy, and the HQT builds and runs successfully
+on a surprising variety of platforms. Still, there are some known prerequisites
+and you'll have to install & configure those properly on your own.
+
+=head3 Requirements & Compatibility
+
+The currently known compatible platforms and system requirements
+
+=head4 Compatible Platforms
+
+The HQT has been successfully installed and run on the following platforms:
+
+=over 4
+
+=item * CentOS 5.x (with a newer perl installed under /opt)
+
+=item * CentOS 6.x
+
+=item * Fedora Core 17 & 18
+
+=item * Ubuntu 12.04 thru 13.04
+
+=item * Mac OS X 10.8.x (Mountain Lion)
+
+=item * Possibly others. Please let us know!
+
+=back
+
+Whatever platform you use, you will have to ensure you have certain other
+components installed and/or configured in order to install and run the HQT.
+
+=head4 System Prerequisites
+
+The base requirements that should be installed and configured on your system
+prior to installing and/or running the HQT are as follows:
+
+=over 4
+
+=item * A *nix or *nix-like environment
+
+=item * Perl 5.10.1 or newer
+
+=item * Hadoop and Hive client binaries and libraries
+
+=item * A JVM that works with the installed Hadoop and Hive, um... stuff
+
+=item * A C Compiler and full build toolchain (gcc/xcode known to work)
+
+=back
+
+For additional functionality like being able to authenticate users and run
+jobs as those users, you will also need the following:
+
+=over 4
+
+=item * Sudo
+
+=item * LDAP client libraries (and possibly binaries)
+
+=item * An LDAP server your users authenticate against
+
+=item * OpenSSL libs and development headers
+
+=back
+
+It's very possible there are other requirements. Please, please B<please> file
+a bug report for anything you needed that isn't described above!
+
+=head4 Notes about the Requirements
+
+Perl 5.10.1 or newer is required. It was released in 2009, so it's
+already fairly old (the most recent released version of perl is 5.18.0
+as of my writing this comment in 2013). However, RHEL/CentOS 5.x is stuck
+with Perl 5.8.8 or thereabouts, which is positively I<ancient> - we're talking
+2005-2006!
+
+If you really think you're "stuck", you're not. There are a variety of
+ways to get a newer perl to make this work. The simplest and safest
+option is to use C<perlbrew>. Perlbrew automates the entire process of
+getting, configuring, building, and using any version of perl you want.
+
+You don't need to be root (in fact, I strongly discourage you from
+installing anything perl-related as root unless it's a package straight
+from your OS vendor's repos), and you don't even need the CPAN to install it.
+Instructions are all here: L<https://metacpan.org/module/App::perlbrew>
+
+=head3 Obtaining the Code
+
+The official main source-code repository for the HQT is currently on
+L<GitHub|https://github.com> under the
+L<TripAdvisor Organization|https://github.com/tripadvisor>, specifically...
+here: L<https://github.com/tripadvisor/hive-query-tool>
+
+You very well might be reading that web page right now :)
+
+You can download any version, revision, or branch you wish in a multitude of
+ways, using C<git>, C<svn>, or just download via HTTP as a compressed archive,
+which you can then unpack locally.
+
+=head3 Setup/Installation Procedure
+
+B<Please do *not* do any of this as the root or admin user of your system>.
+While the HQT setup script does its best to install all of the CPAN modules
+it depends on in a way that is isolated and therefore I<should> have no effect
+on the system perl, installing as root is unnecessary and always risky. In
+most *nix-like environments, too many things depend on the system perl being
+"just so" and if something changes it, fixing the problem can be a nightmare.
+
+As you were.
+
+Start on a system that meets the minimum HQT requirements
+L<described above|/"System Prerequisites">, and B<as a non-root user>
+obtain and/or unpack the source code and enter the top-level directory,
+where you will find a copy of this very file (if you're not already reading
+that copy!)
+
+
+=head4 Run the setup script
+
+This script will basically do almost everything. You'll need a connection to
+the internet because it downloads all the HQT's dependencies from the CPAN.
+You won't even need a CPAN client already installed, as this script will
+download one to bootstrap the whole process.
+
+If you run:
+
+  ./hqt-setup
+
+It will check if the default perl on your system is new enough and if it isn't
+it will look in a few common places for one. If it it can't find a new enough
+version of perl on its own, it will give up and exit with an error.
+
+If you want to use a specific installation of perl, for example, one you
+installed using L<perlbrew|https://metacpan.org/module/App::perlbrew> then
+pass the path to that perl binary as an option to the setup script, like so:
+
+  ./hqt-setup ~/perl5/perlbrew/perls/perl-5.16.3/bin/perl
+
+Go get yourself a cup of coffee. Maybe order a pizza. The first run can take
+a while as the entire dependency chain is resolved, downloaded, built, tested
+and installed. We've pared back some of the direct dependencies though, so
+it's now a lot less time than it used to be.
+
+Once done, it's usually good to run it again, just to make sure there's really
+nothing more it has to install. If it succeeds without installing anything
+then you should be all set!
+
+If the setup script did not succeed and running it repeatedly makes no
+difference, please file a bug report on GitHub.
+
+=head2 Configuration
+
+TODO: describe what needs to go in C<conf/hqt_config.yaml>
+
+=head2 Running
+
+TODO: describe how to run the frontend with C<start-frontend> and the backend
+with C<start-backend> and the options they may take...
+
+=head2 More Information
+
+More information can be found in the POD of the various modules, which, if
+you C<source hqt-setup> you can read with either C<man> or C<perldoc>.
+
+Also, I may end up putting info in the wiki GitHub provides for the project.
+
+Basically, the documentation is still horribly incomplete and hard to find.
+We're working on it, though. (patches welcome!)
+
+=head2 Credits
+
+Thanks to everybody who's helped develop the HQT, whether it be through
+code, documentation, bug reports or feature requests!
+
+I<< - B<Stephen R. Scaffidi>, initial author and current primary maintainer >>
+
+=over 4
+
+=item * I<< B<Rashmi Nayak>, lots and *lots* of code, especially web stuff >>
+
+=item * I<< B<Bill Langenberg>, code, documentation, feature requests, and more >>
+
+=back
+
+=head2 License and Copyright
+
+  Copyright 2013 TripAdvisor, LLC
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+=cut

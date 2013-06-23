@@ -29,16 +29,30 @@ use ExtUtils::MakeMaker;
 #
 ##############################################################################
 
+# Minimum compatible version of perl:
+BEGIN {
+  eval { use 5.010001; 1 } or do {
+    my $e = $@;
+    my $pver = $^V || $];
+    die join " ",
+      "Caught the following error checking the version of perl: $e\n",
+      "This software requires Perl v5.10.1 or newer. This Makefile.PL is being",
+      "run using $^X which is version $pver. Please find a newer version of",
+      "perl to install and run this software\n";
+  };
+}
+
+
 # creates a makefile to build, test, and install the HQT
 WriteMakefile(
+
+  NAME => 'App-HiveQueryTool',
 
   # version of the HQT being installed
   VERSION => '0.01',
 
   # specify the modules that the HQT uses.
   PREREQ_PM => {
-
-    'Perl' => '5.010001',
 
     # If the version matters, put it here. By default, the specified version
     # is the lowest that will be accepted. If a higher one is available, *it*

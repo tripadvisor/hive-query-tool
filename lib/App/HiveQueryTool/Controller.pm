@@ -1,8 +1,26 @@
+##############################################################################
+#                                                                            #
+#   Copyright 2013 TripAdvisor, LLC                                          #
+#                                                                            #
+#   Licensed under the Apache License, Version 2.0 (the "License");          #
+#   you may not use this file except in compliance with the License.         #
+#   You may obtain a copy of the License at                                  #
+#                                                                            #
+#       http://www.apache.org/licenses/LICENSE-2.0                           #
+#                                                                            #
+#   Unless required by applicable law or agreed to in writing, software      #
+#   distributed under the License is distributed on an "AS IS" BASIS,        #
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. #
+#   See the License for the specific language governing permissions and      #
+#   limitations under the License.                                           #
+#                                                                            #
+##############################################################################
 package App::HiveQueryTool::Controller;
-use Mojo::Base 'Mojolicious::Controller';
-use Scalar::Util qw( reftype );
-use Data::Dumper;
 our $VERSION = '0.001';
+use Mojo::Base 'Mojolicious::Controller';
+use CLASS qw( CLASS $CLASS );
+use Scalar::Util qw( reftype );
+use Data::Dumper qw( Dumper );
 
 =head1 DESCRIPTION
 
@@ -12,7 +30,7 @@ like so:
   use Mojo::Base 'App::HiveQueryTool::Controller';
 
 This way, we can put common functionality in one place, along with any
-customizations to the way a 'standard' Mojolicious::Controller does things.
+customizations to the way a 'standard' L<Mojolicious::Controller> does things.
 
 For example, this class overrides the standard constructor, new(), to add
 special handling for an init() method in subclasses.
@@ -20,6 +38,9 @@ special handling for an init() method in subclasses.
 =cut
 
 =head1 METHODS
+
+In addition to methods inherited from L<Mojolicious::Controller>, the
+following methods are defined in this class:
 
 =head2 new
 
@@ -50,42 +71,6 @@ sub new {
   return $self;
 }
 
-
-sub throw {
-print Dumper \@_;
-    # throw away the invocant
-    shift @_;
-    my $caller_pkg = scalar caller;
-    # first argument is always the class of the exception
-    my $ex_type    = shift @_;
-    my $msg        = ! ref $_[0] ? shift @_ : undef;
-    # payload can be a data-structure or an object
-    my $payload    = ref $_[0] ? shift @_ : undef;
-    # if the payload is a hashref and there was no message, see if
-    # the hash contains something to use as a message...
-    if ( ! defined $msg and reftype( $payload ) eq 'HASH' ) {
-        for my $key ( qw( message msg error err ) ) {
-            next unless exists $payload->{$key} and defined $payload->{$key};
-            $msg = $payload->{$_};
-        }
-    }
-    die "Error: [$ex_type] is not a valid exception type!\n"
-        unless $ex_type =~ m{\A [\w]+ (?: :: [\w]+ )* \Z}msx;
-    my $ex_pkg = $caller_pkg . "::Exception::" . $ex_type;
-    eval qq[
-        package $ex_pkg;
-        use overload
-            '""'     => sub { \$_[0]->{as_string} || __PACKAGE__ },
-            'bool'   => sub {1},
-            fallback => 1;
-        1;
-    ] or die "Could not create package [$ex_pkg] for exception type [$ex_type]\n";
-    eval "package " . __PACKAGE__ . ";";
-    $msg = "" unless defined $msg;
-    $payload = {} unless defined $payload;
-    $payload->{as_string} = "$ex_pkg: $msg";
-    die bless $payload, $ex_pkg;
-}
 
 =head2 init()
 

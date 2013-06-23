@@ -1,15 +1,48 @@
+##############################################################################
+#                                                                            #
+#   Copyright 2013 TripAdvisor, LLC                                          #
+#                                                                            #
+#   Licensed under the Apache License, Version 2.0 (the "License");          #
+#   you may not use this file except in compliance with the License.         #
+#   You may obtain a copy of the License at                                  #
+#                                                                            #
+#       http://www.apache.org/licenses/LICENSE-2.0                           #
+#                                                                            #
+#   Unless required by applicable law or agreed to in writing, software      #
+#   distributed under the License is distributed on an "AS IS" BASIS,        #
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. #
+#   See the License for the specific language governing permissions and      #
+#   limitations under the License.                                           #
+#                                                                            #
+##############################################################################
 package App::HiveQueryTool::Emailer;
-use strict;
-use warnings;
-use Email::Sender::Simple qw( sendmail );
+use Moo;
+use MooX::Types::MooseLike::Email qw( :all );
+use namespace::sweep;
+use Email::Sender;
+use Email::Sender::Simple;
 use MIME::Entity;
+use Params::Util qw( _HASHLIKE );
 use Data::Dumper;
 use Try::Tiny;
+
+
 sub send_email {
-  my ($params) = @_;
+
+  my ($params) = _HASHLIKE($_[0]) || @_;
   try {
-    die 'Expected email recipient'
-      unless (defined $params->{recipient} && exists $params->{recipient});
+      my $email = Email::Simple->create(
+        header => [
+          To      => '"Xavier Q. Ample" <x.ample@example.com>',
+          From    => '"Bob Fishman" <orz@example.mil>',
+          Subject => "don't forget to *enjoy the sauce*",
+        ],
+        body => "This message is short, but at least it's cheap.\n",
+      );
+
+      Email::Sender::Simple->send( $email );
+
+    die 'Expected email recipient' unless $params->{recipient};
 
     $params->{sender} //= q{"Hive Query Tool" <blackhole@tripadvisor.com>};
 

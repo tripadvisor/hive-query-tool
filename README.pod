@@ -58,7 +58,9 @@ prior to installing and/or running the HQT are as follows:
 
 =item * A JVM that works with the installed Hadoop and Hive, um... stuff
 
-=item * A C Compiler and full build toolchain (gcc/xcode known to work)
+=item * A C Compiler and standard build toolchain (gcc/xcode known to work)
+
+=item * OpenSSL libs and development headers
 
 =back
 
@@ -72,8 +74,6 @@ jobs as those users, you will also need the following:
 =item * LDAP client libraries (and possibly binaries)
 
 =item * An LDAP server your users authenticate against
-
-=item * OpenSSL libs and development headers
 
 =back
 

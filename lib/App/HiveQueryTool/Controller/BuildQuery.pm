@@ -48,7 +48,6 @@ sub init {
     my $c = shift;
     $HIVECLI_URI   = $c->app->config('backend_listen');
     my $template_dir = catfile $c->app->home, $c->app->config('hql_template_dir');
-    warn "loading query templates from $template_dir";
     $HQL_TEMPLATES = _load_query_templates( $template_dir );
 }
 
@@ -56,7 +55,7 @@ sub _load_query_templates {
     my ($hqt_dir) = @_;
 
     my %template_info;
-    __PACKAGE__->throw( DirMissing => "Could not find directory $hqt_dir" ) unless -d $hqt_dir;
+    die "Could not find directory $hqt_dir" unless -d $hqt_dir;
 
     # get the paths to all non-hidden files ending in .hqt in the dir
     my @hqt_files;

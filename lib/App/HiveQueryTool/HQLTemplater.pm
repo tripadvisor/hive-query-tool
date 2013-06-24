@@ -160,14 +160,20 @@ sub insert_var {
       return;
     }
     when ('fill') {
-      validate_var( $name);
+      validate_var( $name );
       my $var_type = $METADATA{var}{$name}->{type};
-      if ($var_type eq 'list') {
-        return sql_escape_string_list($DATA{var}{$name}); # make comma-separated list SQL-safe
+      my $var_val = $DATA{var}{$name};
+      given ( $var_type ) {
+        when ('list') {
+          return sql_escape_string_list($var_val); # make comma-separated list SQL-safe
+        }
+        when ('int') {
+          return $var_val;
+        }
+        default {
+          return "'$var_val'";
+        }
       }
-      #TODO: update templates to not use single quotes around variable values. We'll make things safe here.
-      #return sql_escape_quoted($DATA{var}{$name}); # make SQL-safe
-      return $DATA{var}{$name};
     }
   }
 }

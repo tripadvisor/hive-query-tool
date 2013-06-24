@@ -19,6 +19,6 @@
 # takes one optional arg, the path to an HQT config file
 set -e
 webroot="$(dirname "$0")"
-source "$webroot/setup-hqt"
+source "$webroot/hqt-setup"
 exec perl "$webroot/script/hivecli-server.pl" "$@"
 

@@ -19,24 +19,27 @@
 # takes one optional arg, the path to an HQT config file
 set -e
 webroot="$(dirname "$0")"
-source "$webroot/setup-hqt"
+source "$webroot/hqt-setup"
 export MOJO_REVERSE_PROXY=1
 exec perl - "$webroot" "$1" <<'END'
   use strict;
   use warnings;
+  use File::Basename qw( dirname );
   use File::Spec::Functions qw( catfile );
   use YAML::Any qw();
   use Mojo::Server::Morbo;
   my $webroot  = shift;
   my $cfg_file = shift || catfile $webroot, qw( conf hqt_config.yaml );
+  my $cfg_dir  = dirname $cfg_file;
   my $app_file = catfile $webroot, qw( script hive-query-tool.webapp.pl );
   my $cfg      = YAML::Any::LoadFile( $cfg_file ) or die "Couldn't load YAML from $cfg_file\n";
+  my $tmpl_dir = $cfg->{hql_template_dir};
   my $listen   = $cfg->{frontend_listen} || 'http://*:3000';
   my @listen_a = ref $listen eq 'ARRAY' ? @$listen
                : ! ref $listen          ? ( $listen )
                : die "Couldn't figure out where the HTTP server should listen!\n";
   my $morbo = Mojo::Server::Morbo->new;
-  $morbo->watch( [ glob( "$webroot/{conf,lib,public,templates,hql_templates}" ) ] );
+  $morbo->watch( [ glob( "$webroot/lib,public,templates}" ), $cfg_dir, $tmpl_dir ] );
   $ENV{MOJO_LISTEN} = join(',', @listen_a); # see src for morbo command, ugh.
   $morbo->run( $app_file );
 END

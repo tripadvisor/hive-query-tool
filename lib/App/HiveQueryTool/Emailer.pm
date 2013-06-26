@@ -31,17 +31,6 @@ sub send_email {
 
   my ($params) = _HASHLIKE($_[0]) || @_;
   try {
-      my $email = Email::Simple->create(
-        header => [
-          To      => '"Xavier Q. Ample" <x.ample@example.com>',
-          From    => '"Bob Fishman" <orz@example.mil>',
-          Subject => "don't forget to *enjoy the sauce*",
-        ],
-        body => "This message is short, but at least it's cheap.\n",
-      );
-
-      Email::Sender::Simple->send( $email );
-
     die 'Expected email recipient' unless $params->{recipient};
 
     $params->{sender} //= q{"Hive Query Tool" <blackhole@tripadvisor.com>};

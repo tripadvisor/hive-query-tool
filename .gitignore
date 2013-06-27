@@ -4,6 +4,7 @@
 
 # HQT-specific stuff
 data/*
+!data/.gitignore
 query_templates/*
 !query_templates/*example*
 conf/*

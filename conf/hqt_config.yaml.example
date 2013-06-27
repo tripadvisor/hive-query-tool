@@ -36,8 +36,11 @@ backend_listen: "http://127.0.0.1:9090"
 email_from_name: "Hive Query Tool"
 email_from_addr: "hivequerytool@mydomain.com"
 
-# relative to the application root, where to find the templates dbm file
+# relative to the application root, where to create/find the templates dbm file
 template_dbm: "data/templates.db"
+
+# where to create/find the job info dbm file
+jobs_dbm: "data/jobs.db"
 
 # directory from which to load templates
 hql_template_dir: "hql_templates/"

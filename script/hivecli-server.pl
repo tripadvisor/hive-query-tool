@@ -91,6 +91,8 @@ my %HIVE_PROCS;
 # the given configuration and HQL.
 my $RUNNER = HiveCLI->new();
 
+use constant TRUE_VALUES  => [ qw( 1 true  yes on  ) ];
+use constant FALSE_VALUES => [ qw( 0 false no  off ), '', undef ];
 
 # this is a stupid-simple web server running on AnyEvent. I chose it because
 # it needs to play nice with Hadoop::HiveCLI which also uses AnyEvent.
@@ -116,12 +118,6 @@ $HTTPD->reg_cb(
       return $req->respond( res_json_xx(400, 'query_id parameter required', {} ) );
     };
 
-    my $user_name = $req->parm('user_name') // do {
-      return $req->respond( res_json_xx(400, 'user_name parameter required', {} ) );
-    };
-    # set the user to run the hive command as
-    $hive_opts{user} = $user_name;
-
     my $template_name = $req->parm('template_name') // do {
       return $req->respond( res_json_xx(400, 'template_name parameter required', {} ) );
     };
@@ -130,8 +126,14 @@ $HTTPD->reg_cb(
       return $req->respond( res_json_xx(400, 'hql parameter required', {} ) );
     };
 
+    # set the user to run the hive command as
+    my $user_name = $hive_opts{user} = $req->parm('user_name') || $ENV{USER};
+
     # get the queue permissions of the user
-    my @queue_perms = capturex(qw(sudo -E -u), $user_name, which('hadoop'), qw(queue -showacls));
+    my @queue_perm_cmd = ( which('hadoop'), qw(queue -showacls) );
+    unshift @queue_perm_cmd, ( qw(sudo -E -u), $user_name )
+      if is_truthy( $CFG->{backend_use_sudo} );
+    my @queue_perms = capturex( @queue_perm_cmd );
 
     # set the queue if the user specified one
     if ( my $queue = $req->parm('queue') ) {
@@ -153,7 +155,6 @@ $HTTPD->reg_cb(
       if ( ! grep { /^\Q$queue\E\s+.*submit-job/ } @queue_perms ) {
         warn join " ",
           "User [$user_name] does not have permission to submit jobs in queue [$queue]",
-          #"which is set in the query. Running job as user [$ENV{USER}] until this is resolved.\n";
           "which is set in the query. Attempting to remove this line from the query...\n";
         #$hive_opts{user} = $ENV{USER};
         #last;

@@ -45,6 +45,12 @@ jobs_dbm: "data/jobs.db"
 # directory from which to load templates
 hql_template_dir: "hql_templates/"
 
+# the backend can use sudo to run hive as the users logged into the front-end,
+# if the OS is configured to auth against LDAP/NIS and sudo is configured as
+# per the instructions in the HQT docs.
+# NOTE: if frontend_auth is "none" this should almost always be set to "yes".
+backend_use_sudo: "yes"
+
 # what method of authentication to use. Set to "none" or
 # comment-out to disable user-authentication.
 frontend_auth: "ldap"

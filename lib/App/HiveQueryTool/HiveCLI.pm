@@ -29,7 +29,7 @@ use Hash::Merge::Simple qw(merge);
 use Moo;
 
 has hive_path => ( is => 'ro', default => sub { __which_or_die('hive') } );
-has user => ( is => 'ro' );
+has user => ( is => 'ro', required => 0 );
 has conf => ( is => 'ro', default => sub { +{} } );
 has env  => ( is => 'ro', default => sub { +{} } );
 
